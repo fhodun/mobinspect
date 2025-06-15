@@ -32,3 +32,6 @@ desktop.ini
 # OS generated
 *.swp
 *~
+
+# custom
+*.sqlite

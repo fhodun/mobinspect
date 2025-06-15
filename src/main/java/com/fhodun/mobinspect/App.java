@@ -7,8 +7,6 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import java.sql.*;
-
 abstract class Vehicle {
     private String brand;
     private String model;
@@ -23,8 +21,6 @@ abstract class Vehicle {
         this.licensePlate = licensePlate;
         this.vin = vin;
     }
-
-    public abstract void addTechnicalInspection(TechnicalInspection technicalInspection);
 
     public String toString() {
         return String.format("%s %s (%s) - License Plate: %s, VIN: %s",
@@ -71,10 +67,6 @@ class Car extends Vehicle {
         this.numberOfDoors = numberOfDoors;
     }
 
-    public void addTechnicalInspection(TechnicalInspection technicalInspection){
-
-    }
-
     // region Getters
     public String getFuelType() {
         return fuelType;
@@ -95,10 +87,6 @@ class Motorcycle extends Vehicle {
         super(brand, model, year, licensePlate, vin);
         this.engineType = engineType;
         this.engineCapacity = engineCapacity;
-    }
-
-    public void addTechnicalInspection(TechnicalInspection technicalInspection){
-        
     }
 
     // region Getters
@@ -150,35 +138,12 @@ class TechnicalInspection {
 }
 
 public class App {
-    String dbUrl = "jdbc:sqlite:db.sqlite";
-
     public static void main(String[] args) {
-        // try (Connection conn = DriverManager.getConnection(url)) {
-        //     if (conn != null) {
-        //         Statement stmt = conn.createStatement();
-        //         stmt.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)");
-
-        //         // dodanie danych
-        //         PreparedStatement pstmt = conn.prepareStatement("INSERT INTO users(name) VALUES(?)");
-        //         pstmt.setString(1, "Jan Kowalski");
-        //         pstmt.executeUpdate();
-
-        //         // odczyt danych
-        //         ResultSet rs = stmt.executeQuery("SELECT * FROM users");
-        //         while (rs.next()) {
-        //             System.out.println(rs.getInt("id") + ": " + rs.getString("name"));
-        //         }
-        //     }
-        // } catch (SQLException e) {
-        //     System.out.println(e.getMessage());
-        // }
-
         String[] columns = { "Marka", "Model", "Rocznik", "Numer rejestracyjny", "Vin" };
 
-        List<Car> vehicles = new ArrayList<>();
-        vehicles.add(new Car("Ford", "Mondeo", "2020", "LB 12356", "1234567890", "benzyna", 4));
-        vehicles.add(new Car("Skoda", "Fabia", "2010", "LU 23151", "0987654321", "benzyna", 4));
-        vehicles.add(new Car("Mercedes", "CLK", "2013", "LBI 40512", "6543217890", "diesel", 2));
+        DatabaseManager dbManager = new DatabaseManager();
+
+        List<Car> vehicles = dbManager.getAllVehicles();
 
         Object[][] data = new Object[vehicles.size()][columns.length];
 
@@ -199,6 +164,7 @@ public class App {
         };
 
         JTable table = new JTable(model);
+        table.getTableHeader().setReorderingAllowed(false);
 
         JFrame frame = new JFrame("System zarzadzania badaniami technicznymi");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
