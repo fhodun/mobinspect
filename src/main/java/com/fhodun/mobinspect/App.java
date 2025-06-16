@@ -64,11 +64,13 @@ public class App {
     }
 
     private static Object onAddCarBtnClicked(DatabaseManager dbManager, DefaultTableModel model) {
+        @SuppressWarnings("unused")
         AddCar carWindow = new AddCar(dbManager, model);
         return null;
     }
 
     private static Object onAddMotorcycleBtnClicked(DatabaseManager dbManager, DefaultTableModel model) {
+        @SuppressWarnings("unused")
         AddMotorcycle motorcycleWindow = new AddMotorcycle(dbManager, model);
         return null;
     }
