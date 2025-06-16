@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import com.fhodun.mobinspect.model.*;
+import com.fhodun.mobinspect.window.*;
 
 public class App {
     public static void main(String[] args) {
@@ -28,14 +29,14 @@ public class App {
             data[i][4] = vehicle.getVin();
         }
 
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
+        DefaultTableModel tableModel = new DefaultTableModel(data, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        JTable table = new JTable(model);
+        JTable table = new JTable(tableModel);
         table.getTableHeader().setReorderingAllowed(false);
 
         JFrame frame = new JFrame("System zarzadzania badaniami technicznymi");
@@ -48,8 +49,8 @@ public class App {
         JButton addCarButton = new JButton("Dodaj samochód");
         JButton addMotorcycleButton = new JButton("Dodaj motocykl");
 
-        addCarButton.addActionListener(e -> onAddCarBtnClicked(dbManager, model));
-        addMotorcycleButton.addActionListener(e -> onAddMotorcycleBtnClicked(dbManager, model));
+        addCarButton.addActionListener(e -> onAddCarBtnClicked(dbManager, tableModel));
+        addMotorcycleButton.addActionListener(e -> onAddMotorcycleBtnClicked(dbManager, tableModel));
 
         buttonPanel.add(addCarButton);
         buttonPanel.add(addMotorcycleButton);
@@ -62,13 +63,13 @@ public class App {
         frame.setVisible(true);
     }
 
-    private static Object onAddMotorcycleBtnClicked(DatabaseManager dbManager, DefaultTableModel model) {
-        JOptionPane.showMessageDialog(null, "Dodaj Auto button clicked!");
+    private static Object onAddCarBtnClicked(DatabaseManager dbManager, DefaultTableModel model) {
+        AddCar carWindow = new AddCar(dbManager, model);
         return null;
     }
 
-    private static Object onAddCarBtnClicked(DatabaseManager dbManager, DefaultTableModel model) {
-        JOptionPane.showMessageDialog(null, "Dodaj Motocykl button clicked!");
+    private static Object onAddMotorcycleBtnClicked(DatabaseManager dbManager, DefaultTableModel model) {
+        AddMotorcycle motorcycleWindow = new AddMotorcycle(dbManager, model);
         return null;
     }
 }
