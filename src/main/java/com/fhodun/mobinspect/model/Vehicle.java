@@ -3,6 +3,8 @@ package com.fhodun.mobinspect.model;
 import java.util.List;
 
 public abstract class Vehicle {
+    public static String DB_TABLE_NAME;
+
     private String brand;
     private String model;
     private String year;
@@ -17,10 +19,7 @@ public abstract class Vehicle {
         this.vin = vin;
     }
 
-    public String toString() {
-        return String.format("%s %s (%s) - License Plate: %s, VIN: %s",
-                brand, model, year, licensePlate, vin);
-    }
+    public abstract String toString();
 
     public static List<String> GetColumns() {
         List<String> columns = List.of("Marka", "Model", "Rocznik", "Numer rejestracyjny", "Vin", "Vehicle Type");

@@ -25,7 +25,7 @@ public class DatabaseManager {
     // region Initialization Methods
     private void initializeTables() {
         String carSql = """
-                CREATE TABLE IF NOT EXISTS cars (
+                CREATE TABLE IF NOT EXISTS %s (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     brand TEXT NOT NULL,
                     model TEXT NOT NULL,
@@ -35,9 +35,9 @@ public class DatabaseManager {
                     fuel_type TEXT,
                     number_of_doors INTEGER
                 );
-                """;
+                """.formatted(Car.DB_TABLE_NAME);
         String motorcycleSql = """
-                CREATE TABLE IF NOT EXISTS motorcycles (
+                CREATE TABLE IF NOT EXISTS %s (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     brand TEXT NOT NULL,
                     model TEXT NOT NULL,
@@ -47,7 +47,7 @@ public class DatabaseManager {
                     engine_type TEXT,
                     engine_capacity INTEGER
                 );
-                """;
+                """.formatted(Motorcycle.DB_TABLE_NAME);
 
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
             stmt.execute(carSql);
@@ -59,7 +59,7 @@ public class DatabaseManager {
     }
 
     private void initializeCars() {
-        if (getTableCount("cars") != 0) {
+        if (getTableCount(Car.DB_TABLE_NAME) != 0) {
             return;
         }
         List<Car> sampleCars = List.of(
@@ -73,7 +73,7 @@ public class DatabaseManager {
     }
 
     private void initializeMotorcycles() {
-        if (getTableCount("motorcycles") != 0) {
+        if (getTableCount(Motorcycle.DB_TABLE_NAME) != 0) {
             return;
         }
         List<Motorcycle> sampleMotorcycles = List.of(
@@ -107,9 +107,9 @@ public class DatabaseManager {
 
     public void addCar(Car car) {
         String sql = """
-                INSERT INTO cars (brand, model, year, license_plate, vin, fuel_type, number_of_doors)
+                INSERT INTO %s (brand, model, year, license_plate, vin, fuel_type, number_of_doors)
                 VALUES (?, ?, ?, ?, ?, ?, ?);
-                """;
+                """.formatted(Car.DB_TABLE_NAME);
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, car.getBrand());
@@ -128,9 +128,9 @@ public class DatabaseManager {
 
     public void addMotorcycle(Motorcycle motorcycle) {
         String sql = """
-                INSERT INTO motorcycles (brand, model, year, license_plate, vin, engine_type, engine_capacity)
+                INSERT INTO %s (brand, model, year, license_plate, vin, engine_type, engine_capacity)
                 VALUES (?, ?, ?, ?, ?, ?, ?);
-                """;
+                """.formatted(Motorcycle.DB_TABLE_NAME);
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, motorcycle.getBrand());
@@ -152,7 +152,7 @@ public class DatabaseManager {
 
         try (Connection conn = connect();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM cars")) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM %s".formatted(Car.DB_TABLE_NAME))) {
             while (rs.next()) {
                 Car car = new Car(
                         rs.getString("brand"),
@@ -176,7 +176,7 @@ public class DatabaseManager {
 
         try (Connection conn = connect();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM motorcycles")) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM %s".formatted(Motorcycle.DB_TABLE_NAME))) {
             while (rs.next()) {
                 Motorcycle motorcycle = new Motorcycle(
                         rs.getString("brand"),

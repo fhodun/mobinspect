@@ -1,49 +1,12 @@
 package com.fhodun.mobinspect;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import com.fhodun.mobinspect.model.*;
-
-class TechnicalInspection {
-    private Vehicle vehicle;
-    private long odometerReading;
-    private LocalDate validFrom;
-    private LocalDate validUntil;
-
-    public TechnicalInspection(Vehicle vehicle, long odometerReading, LocalDate validFrom, LocalDate validUntil) {
-        this.vehicle = vehicle;
-        this.odometerReading = odometerReading;
-        this.validFrom = validFrom;
-        this.validUntil = validUntil;
-    }
-
-    public String toString() {
-        return String.format("Technical Inspection for %s %s (%s) - Odometer: %d km, Valid from: %s to %s",
-                vehicle.getBrand(), vehicle.getModel(), vehicle.getYear(), odometerReading, validFrom, validUntil);
-    }
-
-    // region Getters
-    public Vehicle getVehicle() {
-        return vehicle;
-    }
-
-    public long getOdometerReading() {
-        return odometerReading;
-    }
-
-    public LocalDate getValidFrom() {
-        return validFrom;
-    }
-
-    public LocalDate getValidUntil() {
-        return validUntil;
-    }
-    // endregion
-}
 
 public class App {
     public static void main(String[] args) {
@@ -78,10 +41,34 @@ public class App {
         JFrame frame = new JFrame("System zarzadzania badaniami technicznymi");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400);
+        frame.setLayout(new BorderLayout());
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JButton addCarButton = new JButton("Dodaj samochód");
+        JButton addMotorcycleButton = new JButton("Dodaj motocykl");
+
+        addCarButton.addActionListener(e -> onAddCarBtnClicked(dbManager, model));
+        addMotorcycleButton.addActionListener(e -> onAddMotorcycleBtnClicked(dbManager, model));
+
+        buttonPanel.add(addCarButton);
+        buttonPanel.add(addMotorcycleButton);
+
+        frame.add(buttonPanel, BorderLayout.NORTH);
 
         JScrollPane scrollPane = new JScrollPane(table);
         frame.add(scrollPane);
 
         frame.setVisible(true);
+    }
+
+    private static Object onAddMotorcycleBtnClicked(DatabaseManager dbManager, DefaultTableModel model) {
+        JOptionPane.showMessageDialog(null, "Dodaj Auto button clicked!");
+        return null;
+    }
+
+    private static Object onAddCarBtnClicked(DatabaseManager dbManager, DefaultTableModel model) {
+        JOptionPane.showMessageDialog(null, "Dodaj Motocykl button clicked!");
+        return null;
     }
 }
