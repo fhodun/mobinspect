@@ -6,9 +6,10 @@ public class Motorcycle extends Vehicle {
     private String engineType;
     private int engineCapacity;
 
-    public Motorcycle(String brand, String model, String year, String licensePlate, String vin, String engineType,
+    public Motorcycle(int id, String brand, String model, String year, String licensePlate, String vin,
+            String engineType,
             int engineCapacity) {
-        super(brand, model, year, licensePlate, vin);
+        super(id, brand, model, year, licensePlate, vin);
         this.engineType = engineType;
         this.engineCapacity = engineCapacity;
     }
@@ -17,21 +18,35 @@ public class Motorcycle extends Vehicle {
     public String toString() {
         return """
                 Motorcycle{
+                    id='%d',
                     brand='%s',
                     model='%s',
                     year='%s',
                     licensePlate='%s',
                     vin='%s',
                     engineType='%s',
-                    engineCapacity=%d
-                }""".formatted(
+                    engineCapacity='%d'
+                }""".formatted(getId(),
                 getBrand(),
                 getModel(),
                 getYear(),
                 getLicensePlate(),
                 getVin(),
-                engineType,
-                engineCapacity);
+                getEngineType(),
+                getEngineCapacity());
+    }
+
+    @Override
+    public Object[] toRow() {
+        return new Object[] {
+                getId(),
+                getBrand(),
+                getModel(),
+                getYear(),
+                getLicensePlate(),
+                getVin(),
+                "Motocykl"
+        };
     }
 
     // region Getters

@@ -62,32 +62,105 @@ public class DatabaseManager {
         if (getTableCount(Car.DB_TABLE_NAME) != 0) {
             return;
         }
-        List<Car> sampleCars = List.of(
-                new Car("Toyota", "Camry", "2020", "ABC123", "1HGBH41JXMN109186", "Gasoline", 4),
-                new Car("Honda", "Civic", "2019", "XYZ789", "2HNYD2H59AH000001", "Gasoline", 4),
-                new Car("Ford", "Focus", "2021", "LMN456", "3FADP4FJ5JM000002", "Gasoline", 4));
-
-        for (Car car : sampleCars) {
-            addCar(car);
-        }
+        addCar("Toyota", "Camry", "2020", "ABC123", "1HGBH41JXMN109186", "Gasoline", 4);
+        addCar("Honda", "Civic", "2019", "XYZ789", "2HNYD2H59AH000001", "Gasoline", 4);
+        addCar("Ford", "Focus", "2021", "LMN456", "3FADP4FJ5JM000002", "Gasoline", 4);
     }
 
     private void initializeMotorcycles() {
         if (getTableCount(Motorcycle.DB_TABLE_NAME) != 0) {
             return;
         }
-        List<Motorcycle> sampleMotorcycles = List.of(
-                new Motorcycle("Yamaha", "MT-07", "2020", "MOTO123", "JYARM06E0LA000001", "Parallel Twin", 689),
-                new Motorcycle("Honda", "CBR500R", "2019", "MOTO456", "MLHPC4460D5200002", "Parallel Twin", 471),
-                new Motorcycle("Kawasaki", "Ninja 400", "2021", "MOTO789", "JKAEX8A18MDA00003", "Parallel Twin",
-                        399));
 
-        for (Motorcycle motorcycle : sampleMotorcycles) {
-            addMotorcycle(motorcycle);
+        addMotorcycle("Yamaha", "MT-07", "2020", "MOTO123", "JYARM06E0LA000001", "Parallel Twin", 689);
+        addMotorcycle("Honda", "CBR500R", "2019", "MOTO456", "MLHPC4460D5200002", "Parallel Twin", 471);
+        addMotorcycle("Kawasaki", "Ninja 400", "2021", "MOTO789", "JKAEX8A18MDA00003", "Parallel Twin", 399);
+    }
+    // endregion
+
+    // region Add Methods
+    public Car addCar(String brand, String model, String year, String licensePlate, String vin,
+            String fuelType, int numberOfDoors) {
+        String sql = """
+                INSERT INTO %s (brand, model, year, license_plate, vin, fuel_type, number_of_doors)
+                VALUES (?, ?, ?, ?, ?, ?, ?);
+                """.formatted(Car.DB_TABLE_NAME);
+
+        try (Connection conn = connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, brand);
+            pstmt.setString(2, model);
+            pstmt.setString(3, year);
+            pstmt.setString(4, licensePlate);
+            pstmt.setString(5, vin);
+            pstmt.setString(6, fuelType);
+            pstmt.setInt(7, numberOfDoors);
+
+            pstmt.executeUpdate();
+
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int id = generatedKeys.getInt(1);
+                return new Car(
+                        id,
+                        brand,
+                        model,
+                        year,
+                        licensePlate,
+                        vin,
+                        fuelType,
+                        numberOfDoors);
+            } else {
+                throw new SQLException("Nie udało się uzyskać ID nowego rekordu.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error inserting car: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public Motorcycle addMotorcycle(String brand, String model, String year, String licensePlate, String vin,
+            String engineType, int engineCapacity) {
+        String sql = """
+                INSERT INTO %s (brand, model, year, license_plate, vin, engine_type, engine_capacity)
+                VALUES (?, ?, ?, ?, ?, ?, ?);
+                """.formatted(Motorcycle.DB_TABLE_NAME);
+
+        try (Connection conn = connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, brand);
+            pstmt.setString(2, model);
+            pstmt.setString(3, year);
+            pstmt.setString(4, licensePlate);
+            pstmt.setString(5, vin);
+            pstmt.setString(6, engineType);
+            pstmt.setInt(7, engineCapacity);
+
+            pstmt.executeUpdate();
+
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int id = generatedKeys.getInt(1);
+                return new Motorcycle(
+                        id,
+                        brand,
+                        model,
+                        year,
+                        licensePlate,
+                        vin,
+                        engineType,
+                        engineCapacity);
+            } else {
+                throw new SQLException("Nie udało się uzyskać ID nowego rekordu.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error inserting motorcycle: " + e.getMessage());
+            return null;
         }
     }
     // endregion
 
+    // region Getters
     private int getTableCount(String tableName) {
         String sql = "SELECT COUNT(*) AS count FROM " + tableName;
         int count = 0;
@@ -105,48 +178,6 @@ public class DatabaseManager {
         return count;
     }
 
-    public void addCar(Car car) {
-        String sql = """
-                INSERT INTO %s (brand, model, year, license_plate, vin, fuel_type, number_of_doors)
-                VALUES (?, ?, ?, ?, ?, ?, ?);
-                """.formatted(Car.DB_TABLE_NAME);
-
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, car.getBrand());
-            pstmt.setString(2, car.getModel());
-            pstmt.setString(3, car.getYear());
-            pstmt.setString(4, car.getLicensePlate());
-            pstmt.setString(5, car.getVin());
-            pstmt.setString(6, car.getFuelType());
-            pstmt.setInt(7, car.getNumberOfDoors());
-
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Error inserting car: " + e.getMessage());
-        }
-    }
-
-    public void addMotorcycle(Motorcycle motorcycle) {
-        String sql = """
-                INSERT INTO %s (brand, model, year, license_plate, vin, engine_type, engine_capacity)
-                VALUES (?, ?, ?, ?, ?, ?, ?);
-                """.formatted(Motorcycle.DB_TABLE_NAME);
-
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, motorcycle.getBrand());
-            pstmt.setString(2, motorcycle.getModel());
-            pstmt.setString(3, motorcycle.getYear());
-            pstmt.setString(4, motorcycle.getLicensePlate());
-            pstmt.setString(5, motorcycle.getVin());
-            pstmt.setString(6, motorcycle.getEngineType());
-            pstmt.setInt(7, motorcycle.getEngineCapacity());
-
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Error inserting motorcycle: " + e.getMessage());
-        }
-    }
-
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
 
@@ -155,6 +186,7 @@ public class DatabaseManager {
                 ResultSet rs = stmt.executeQuery("SELECT * FROM %s".formatted(Car.DB_TABLE_NAME))) {
             while (rs.next()) {
                 Car car = new Car(
+                        rs.getInt("id"),
                         rs.getString("brand"),
                         rs.getString("model"),
                         rs.getString("year"),
@@ -179,6 +211,7 @@ public class DatabaseManager {
                 ResultSet rs = stmt.executeQuery("SELECT * FROM %s".formatted(Motorcycle.DB_TABLE_NAME))) {
             while (rs.next()) {
                 Motorcycle motorcycle = new Motorcycle(
+                        rs.getInt("id"),
                         rs.getString("brand"),
                         rs.getString("model"),
                         rs.getString("year"),
@@ -206,4 +239,89 @@ public class DatabaseManager {
 
         return vehicles;
     }
+
+    public Car getCarById(int id) {
+        String sql = "SELECT * FROM %s WHERE id = ?".formatted(Car.DB_TABLE_NAME);
+        Car car = null;
+
+        try (Connection conn = connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                car = new Car(
+                        rs.getInt("id"),
+                        rs.getString("brand"),
+                        rs.getString("model"),
+                        rs.getString("year"),
+                        rs.getString("license_plate"),
+                        rs.getString("vin"),
+                        rs.getString("fuel_type"),
+                        rs.getInt("number_of_doors"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching car by ID: " + e.getMessage());
+        }
+
+        return car;
+    }
+
+    public Motorcycle getMotorcycleById(int id) {
+        String sql = "SELECT * FROM %s WHERE id = ?".formatted(Motorcycle.DB_TABLE_NAME);
+        Motorcycle motorcycle = null;
+
+        try (Connection conn = connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                motorcycle = new Motorcycle(
+                        rs.getInt("id"),
+                        rs.getString("brand"),
+                        rs.getString("model"),
+                        rs.getString("year"),
+                        rs.getString("license_plate"),
+                        rs.getString("vin"),
+                        rs.getString("engine_type"),
+                        rs.getInt("engine_capacity"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching motorcycle by ID: " + e.getMessage());
+        }
+
+        return motorcycle;
+    }
+    // endregion
+
+    // region Delete Methods
+    public boolean deleteCar(int id) {
+        String sql = "DELETE FROM %s WHERE id = ?".formatted(Car.DB_TABLE_NAME);
+
+        try (Connection conn = connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error deleting car: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteMotorcycle(int id) {
+        String sql = "DELETE FROM %s WHERE id = ?".formatted(Motorcycle.DB_TABLE_NAME);
+
+        try (Connection conn = connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error deleting motorcycle: " + e.getMessage());
+            return false;
+        }
+    }
+    // endregion
 }

@@ -6,9 +6,9 @@ public class Car extends Vehicle {
     private String fuelType;
     private int numberOfDoors;
 
-    public Car(String brand, String model, String year, String licensePlate, String vin, String fuelType,
+    public Car(int id, String brand, String model, String year, String licensePlate, String vin, String fuelType,
             int numberOfDoors) {
-        super(brand, model, year, licensePlate, vin);
+        super(id, brand, model, year, licensePlate, vin);
         this.fuelType = fuelType;
         this.numberOfDoors = numberOfDoors;
     }
@@ -17,6 +17,7 @@ public class Car extends Vehicle {
     public String toString() {
         return """
                 Car{
+                    id='%d',
                     brand='%s',
                     model='%s',
                     year='%s',
@@ -24,7 +25,28 @@ public class Car extends Vehicle {
                     vin='%s',
                     fuelType='%s',
                     numberOfDoors='%d',
-                }""".formatted(getBrand(), getModel(), getYear(), getLicensePlate(), getVin(), fuelType, numberOfDoors);
+                }""".formatted(
+                getId(),
+                getBrand(),
+                getModel(),
+                getYear(),
+                getLicensePlate(),
+                getVin(),
+                getFuelType(),
+                getNumberOfDoors());
+    }
+
+    @Override
+    public Object[] toRow() {
+        return new Object[] {
+                getId(),
+                getBrand(),
+                getModel(),
+                getYear(),
+                getLicensePlate(),
+                getVin(),
+                "Samochód"
+        };
     }
 
     // region Getters
